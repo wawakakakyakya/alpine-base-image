@@ -6,18 +6,18 @@ USER root
 # update package
 RUN echo -e "http://dl-4.alpinelinux.org/alpine/v3.5/community\nhttp://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 # echo "http://alpine.gliderlabs.com/alpine/edge/main"
-RUN apk update
-RUN apk upgrade
-RUN apk --no-cache add --virtual=bash-dependencies bash bash-doc bash-completion
-RUN apk --no-cache add vim net-tools
+RUN apk update \
+    && apk upgrade \
+    && apk --no-cache add vim net-tools openrc \
+    && apk --no-cache add --virtual=bash-dependencies bash bash-doc bash-completion
 
 # https://blog.adachin.me/wordpress/archives/4177
 # https://github.com/gliderlabs/docker-alpine/issues/183
 # Install openrc, openrc is service manager.
 
-RUN apk add openrc \
+# RUN apk add openrc \
 # Tell openrc its running inside a container, till now that has meant LXC
-    && sed -i 's/#rc_sys=""/rc_sys="lxc"/g' /etc/rc.conf \
+RUN sed -i 's/#rc_sys=""/rc_sys="lxc"/g' /etc/rc.conf \
 # Tell openrc loopback and net are already there, since docker handles the networking
     && echo 'rc_provide="loopback net"' >> /etc/rc.conf \
 # no need for loggers
@@ -44,6 +44,3 @@ RUN sed -e 's/ash/bash/' /etc/passwd
 RUN apk --update add tzdata && \
     cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
     apk del tzdata
-
-# set environment
-ENV LANG="ja_JP.UTF-8"
