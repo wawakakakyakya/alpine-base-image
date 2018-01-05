@@ -33,14 +33,14 @@ RUN sed -i 's/#rc_sys=""/rc_sys="lxc"/g' /etc/rc.conf \
     && rc-status \
     && touch /run/openrc/softlevel
 
-# clean apk cache
-RUN rm -rf /var/cache/apk/*
-
 # change login shell
 # Todo: It does not work
 RUN sed -e 's/ash/bash/' /etc/passwd
 
 # change TimeZone JST
-RUN apk --update add tzdata && \
-    cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
-    apk del tzdata
+RUN apk --update add tzdata \
+    && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+    && apk del tzdata
+
+# clean apk cache
+RUN rm -rf /var/cache/apk/*
